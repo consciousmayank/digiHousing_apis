@@ -1,0 +1,166 @@
+Sure! Let's go through each table and see how the relationships help in navigating and managing the data.
+
+### 1. [RolesDbModel](file:///Users/myke/dev/personal/digihousing/apis2#951%2C30-951%2C30) and [UserDbModel](file:///Users/myke/dev/personal/digihousing/apis2#1019%2C52-1019%2C52)
+
+#### [RolesDbModel](file:///Users/myke/dev/personal/digihousing/apis2#951%2C30-951%2C30)
+```python
+class RolesDbModel(Base):
+    __tablename__ = 'roles'
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True)
+    description = Column(String, nullable=True)
+    created_at = Column(TIMESTAMP, default=func.now())
+    updated_at = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
+    users = relationship("UserDbModel", back_populates="role")
+```
+
+#### `UserDbModel`
+```python
+class UserDbModel(Base):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True)
+    email_id = Column(String, unique=True)
+    password = Column(String)
+    verification_code = Column(String, default=None)
+    confirmed = Column(Boolean, default=False)
+    role_id = Column(Integer, ForeignKey("roles.id"), nullable=False)
+    created_at = Column(TIMESTAMP, default=func.now())
+    updated_at = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
+    role = relationship("RolesDbModel", back_populates="users")
+```
+
+### Benefits:
+- **From `RolesDbModel` to `UserDbModel`**: You can access all users associated with a specific role.
+  ```python
+  role = session.query(RolesDbModel).filter_by(name="Admin").first()
+  print(role.users)  # List of users with the "Admin" role
+  ```
+- **From `UserDbModel` to `RolesDbModel`**: You can access the role associated with a specific user.
+  ```python
+  user = session.query(UserDbModel).filter_by(email_id="user@example.com").first()
+  print(user.role)  # The role associated with the user
+  ```
+
+### 2. `UserDbModel` and `PropertyTypesDbModel`
+
+#### `UserDbModel`
+```python
+class UserDbModel(Base):
+    __tablename__ = 'users'
+    # ... existing columns ...
+    property_types = relationship("PropertyTypesDbModel", back_populates="user")
+```
+
+#### `PropertyTypesDbModel`
+```python
+class PropertyTypesDbModel(Base):
+    __tablename__ = 'property_types'
+    # ... existing columns ...
+    user = relationship("UserDbModel", back_populates="property_types")
+```
+
+### Benefits:
+- **From `UserDbModel` to `PropertyTypesDbModel`**: You can access all property types created by a specific user.
+  ```python
+  user = session.query(UserDbModel).filter_by(email_id="user@example.com").first()
+  print(user.property_types)  # List of property types created by the user
+  ```
+- **From `PropertyTypesDbModel` to `UserDbModel`**: You can access the user who created a specific property type.
+  ```python
+  property_type = session.query(PropertyTypesDbModel).filter_by(name="Apartment").first()
+  print(property_type.user)  # The user who created the property type
+  ```
+
+### 3. `UserDbModel` and `PropertyConfigDbModel`
+
+#### `UserDbModel`
+```python
+class UserDbModel(Base):
+    __tablename__ = 'users'
+    # ... existing columns ...
+    property_config = relationship("PropertyConfigDbModel", back_populates="user")
+```
+
+#### `PropertyConfigDbModel`
+```python
+class PropertyConfigDbModel(Base):
+    __tablename__ = 'property_config'
+    # ... existing columns ...
+    user = relationship("UserDbModel", back_populates="property_config")
+```
+
+### Benefits:
+- **From `UserDbModel` to `PropertyConfigDbModel`**: You can access all property configurations created by a specific user.
+  ```python
+  user = session.query(UserDbModel).filter_by(email_id="user@example.com").first()
+  print(user.property_config)  # List of property configurations created by the user
+  ```
+- **From `PropertyConfigDbModel` to `UserDbModel`**: You can access the user who created a specific property configuration.
+  ```python
+  property_config = session.query(PropertyConfigDbModel).filter_by(name="Luxury").first()
+  print(property_config.user)  # The user who created the property configuration
+  ```
+
+### 4. `UserDbModel` and `PropertyAddressDbModel`
+
+#### `UserDbModel`
+```python
+class UserDbModel(Base):
+    __tablename__ = 'users'
+    # ... existing columns ...
+    property_address = relationship("PropertyAddressDbModel", back_populates="user")
+```
+
+#### `PropertyAddressDbModel`
+```python
+class PropertyAddressDbModel(Base):
+    __tablename__ = 'property_address'
+    # ... existing columns ...
+    user = relationship("UserDbModel", back_populates="property_address")
+```
+
+### Benefits:
+- **From `UserDbModel` to `PropertyAddressDbModel`**: You can access all property addresses created by a specific user.
+  ```python
+  user = session.query(UserDbModel).filter_by(email_id="user@example.com").first()
+  print(user.property_address)  # List of property addresses created by the user
+  ```
+- **From `PropertyAddressDbModel` to `UserDbModel`**: You can access the user who created a specific property address.
+  ```python
+  property_address = session.query(PropertyAddressDbModel).filter_by(city="New York").first()
+  print(property_address.user)  # The user who created the property address
+  ```
+
+### 5. `UserDbModel` and `AmenitiesDbModel`
+
+#### `UserDbModel`
+```python
+class UserDbModel(Base):
+    __tablename__ = 'users'
+    # ... existing columns ...
+    amenities = relationship("AmenitiesDbModel", back_populates="user")
+```
+
+#### `AmenitiesDbModel`
+```python
+class AmenitiesDbModel(Base):
+    __tablename__ = 'amenities'
+    # ... existing columns ...
+    user = relationship("UserDbModel", back_populates="amenities")
+```
+
+### Benefits:
+- **From `UserDbModel` to `AmenitiesDbModel`**: You can access all amenities created by a specific user.
+  ```python
+  user = session.query(UserDbModel).filter_by(email_id="user@example.com").first()
+  print(user.amenities)  # List of amenities created by the user
+  ```
+- **From `AmenitiesDbModel` to `UserDbModel`**: You can access the user who created a specific amenity.
+  ```python
+  amenity = session.query(AmenitiesDbModel).filter_by(name="Pool").first()
+  print(amenity.user)  # The user who created the amenity
+  ```
+
+### Summary
+
+By defining relationships with `back_populates`, you enable bidirectional navigation between related models. This allows you to easily access related data from either side of the relationship, making your code more intuitive and reducing the need for additional queries.

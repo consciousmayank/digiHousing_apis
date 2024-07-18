@@ -1,0 +1,12 @@
+alembic
+fastapi
+uvicorn[standard]
+sqlalchemy
+databases[asyncpg] # for talking to postgres sql.
+python-dotenv
+pydantic-settings
+rich
+python-jose
+python-multipart
+passlib[bcrypt]
+psycopg2-binary
