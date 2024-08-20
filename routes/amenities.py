@@ -5,13 +5,8 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
-from database.crud import (
-    create_record,
-    delete_record,
-    fetch_all_records,
-    fetch_record,
-    update_record,
-)
+from database.crud import (create_record, delete_record, fetch_all_records,
+                           fetch_record, update_record)
 from database.database import Database
 from database.database_connection import SessionLocal
 from database.database_models import AmenitiesDbModel
@@ -43,7 +38,7 @@ class AmenityList(Amenity):
 
 
 # Function to check if an amenity already exists in the database
-def check_if_amenity_already_exists(name: str, db: SessionLocal) -> bool:
+def check_if_amenity_already_exists(name: str, db: SessionLocal,current_user: UserUpdate = Depends(get_current_user_from_token)) -> bool:
     """
     Check if an amenity with the given name already exists in the database.
 
@@ -72,7 +67,7 @@ def check_if_amenity_already_exists(name: str, db: SessionLocal) -> bool:
 )
 async def create_amenity(
     amenity: Amenity,
-    current_user: User = Depends(get_current_user_from_token),
+    current_user: UserUpdate = Depends(get_current_user_from_token),
     db_session=Depends(Database().get_db),
 ):
     """
@@ -111,7 +106,7 @@ async def create_amenity(
 async def update_amenity(
     amenity_id: int,
     amenity: Amenity,
-    current_user: User = Depends(get_current_user_from_token),
+    current_user: UserUpdate = Depends(get_current_user_from_token),
     db_session=Depends(Database().get_db),
 ):
     """
@@ -188,7 +183,6 @@ async def delete_amenity(
 # Endpoint to get all amenities
 @router.get(
     "/all",
-    response_model=List[AmenityList],
     name="Get all amenities",
     description="Can only be accessed by super admin or admin",
 )
@@ -217,6 +211,7 @@ async def get_amenities(db_session: SessionLocal = Depends(Database().get_db)):
 async def get_amenity(
     amenity_id: int,
     db_session: SessionLocal = Depends(Database().get_db),
+    current_user: UserUpdate = Depends(get_current_user_from_token),
 ):
     """
     Get an amenity by ID.

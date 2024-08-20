@@ -73,6 +73,15 @@ def access_token_expiry_minutes() -> int:
     return 30
 
 
+# create a guest user token valid for 1 hour
+# def create_guest_user_token():
+#     expire = datetime.datetime.utcnow() + datetime.timedelta(
+#         minutes=access_token_expiry_minutes()*2,
+#     )
+#     jwt_data = {"sub": "guest_user", "exp": expire}
+#     return jwt.encode(jwt_data, key=config.TOKEN_SECRET_KEY, algorithm=config.ALGORITHM)
+
+
 def create_access_token(email: str):
     logger.info("Creating access token", extra={"email": email})
     expire = datetime.datetime.utcnow() + datetime.timedelta(
@@ -189,7 +198,6 @@ async def super_admin_or_admin_required(
     admin_role_id, super_admin_role_id, _ = await get_role_ids(db_session=db_session)
 
     user_in_db = db_session.query(UserDbModel).filter(UserDbModel.id == current_user.id).one_or_none()
-
     if user_in_db.role_id in {admin_role_id, super_admin_role_id}:
         return current_user
     else:

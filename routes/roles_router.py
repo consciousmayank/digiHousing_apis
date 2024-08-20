@@ -2,14 +2,16 @@ import logging
 import pdb
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from database.crud import create_record, delete_record, fetch_all_records, update_record
 
+from database.crud import (create_record, delete_record, fetch_all_records,
+                           update_record)
 from database.database import Database, Session
 from database.database_connection import SessionLocal
 from database.database_models import RolesDbModel
 from pydantic_models.role_model import Role, RoleUpdate
 from pydantic_models.user_model import User, UserUpdate
-from security import get_current_user_from_token, is_super_admin, super_admin_required
+from security import (get_current_user_from_token, is_super_admin,
+                      super_admin_required)
 
 router = APIRouter()
 
@@ -54,6 +56,7 @@ async def add_a_new_role(
 )
 async def get_all_the_roles(
     db_session: SessionLocal = Depends(Database().get_db),
+    current_user: UserUpdate = Depends(get_current_user_from_token)
 ):
     logger.info("Fetching all the roles")
 

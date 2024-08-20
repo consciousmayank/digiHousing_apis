@@ -86,10 +86,10 @@ async def log_requests(request: Request, call_next):
     return new_response
 
 
-app.add_exception_handler(HTTPException, http_exception_handler)
-app.add_exception_handler(RequestValidationError, validation_exception_handler)
-app.add_exception_handler(SQLAlchemyError, sqlalchemy_exception_handler)
-app.add_exception_handler(Exception, generic_exception_handler)
+# app.add_exception_handler(HTTPException, http_exception_handler)
+# app.add_exception_handler(RequestValidationError, validation_exception_handler)
+# app.add_exception_handler(SQLAlchemyError, sqlalchemy_exception_handler)
+# app.add_exception_handler(Exception, generic_exception_handler)
 
 
 

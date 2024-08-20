@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, field_validator
 
@@ -16,14 +16,27 @@ class QueryModel(BaseModel):
     property_type_id: int
     property_config_id: int
     property_address_id: Optional[int] = None
+    address: Optional[dict] = None
     contacted: Optional[bool] = False
     resolution: Optional[str] = ''
-    amenities_id: Optional[int] = None
+    amenities: Optional[List[int]] = None  # Changed from amenities_id to amenities_ids
 
-    
+class AmenityModel(BaseModel):
+    id: int
+    name: str
+    description: str
 
-class QueryList(QueryModel):
-    id: int    
+class QueryList(BaseModel):
+    id: int
+    user_phonenumber: str
+    user_name: str
+    query_type: QueryTypeEnum
+    property_type_id: int
+    property_config_id: int
+    property_address_id: Optional[int] = None
+    contacted: bool
+    resolution: str
+    amenities: List[AmenityModel]  # Add this line to include amenities in the response
 
 class QueryStatusUpdate(BaseModel):
     contacted: bool

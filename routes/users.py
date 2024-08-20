@@ -74,7 +74,18 @@ async def get_all_end_users_list(db_session: SessionLocal = Depends(Database().g
 async def login(user: UserIn, db_session: SessionLocal = Depends(Database().get_db)):
     user = await authenticate_user(email=user.email, password=user.password, db=db_session)
     access_token = create_access_token(email=user.email_id)
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "role": user.role.name}
+
+@router.post("/guest_user", status_code=status.HTTP_200_OK)
+async def login_guest_user(db_session: SessionLocal = Depends(Database().get_db)):
+    user = db_session.query(UserDbModel).filter(UserDbModel.email_id == "guest_user").one_or_none()
+    if user is None:
+        role_id = db_session.query(RolesDbModel).filter(RolesDbModel.name == "guest_user").one_or_none().id
+        user = UserDbModel(email_id="guest_user", password=get_password_hash(password="guest_user"), role_id=role_id)
+        db_session.add(user)
+        db_session.commit()
+    access_token = create_access_token(email=user.email_id)
+    return {"access_token": access_token, "role": "guest_user"}
 
 
 async def register_user(user: UserIn, role_id: int, db_session: SessionLocal):
